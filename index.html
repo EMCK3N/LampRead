@@ -2,14 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!--
+  LampRead
+  v0.2  Bookcase landing page with lamp-light logo. Marking tools only in the reader, collapsible.
+        Marks exported as CriticMarkup (tag + note), version tracking, file renamed index.html.
+        Import is a plus slot on the shelf; export lives inside the book menu. Slogan: Stories by dad.
+  v0.1  Reader with word/sentence/paragraph marks, markdown import/export, backup.
+-->
+<meta name="application-name" content="LampRead">
+<meta name="version" content="0.2">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Lamp">
+<meta name="apple-mobile-web-app-title" content="LampRead">
 <meta name="theme-color" content="#14151c">
-<title>Lamp — books to read aloud</title>
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%2314151c'/%3E%3Cpath d='M90 34 L126 84 H54 Z' fill='%23e9b44c'/%3E%3Crect x='84' y='84' width='12' height='44' fill='%23e9b44c'/%3E%3Crect x='62' y='128' width='56' height='12' rx='6' fill='%23e9b44c'/%3E%3C/svg%3E">
+<title>LampRead — stories by dad</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D%22-15%200%20230%20230%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20x%3D%22-15%22%20width%3D%22230%22%20height%3D%22230%22%20fill%3D%22%2314151c%22%2F%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22lc%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffd98a%22%20stop-opacity%3D%22.6%22%2F%3E%3Cstop%20offset%3D%22.5%22%20stop-color%3D%22%23e9b44c%22%20stop-opacity%3D%22.2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23e9b44c%22%20stop-opacity%3D%220%22%2F%3E%3C%2FlinearGradient%3E%3CradialGradient%20id%3D%22lg%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffe3a3%22%20stop-opacity%3D%22.9%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23ffe3a3%22%20stop-opacity%3D%220%22%2F%3E%3C%2FradialGradient%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M87%2066L113%2066L186%20230L14%20230Z%22%20fill%3D%22url%28%23lc%29%22%2F%3E%3Ccircle%20cx%3D%22100%22%20cy%3D%2266%22%20r%3D%2222%22%20fill%3D%22url%28%23lg%29%22%2F%3E%3Cpath%20d%3D%22M100%200V32%22%20stroke%3D%22%23e9b44c%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M72%2064Q72%2032%20100%2032Q128%2032%20128%2064Z%22%20fill%3D%22%23e9b44c%22%2F%3E%3Cellipse%20cx%3D%22100%22%20cy%3D%2265%22%20rx%3D%2210%22%20ry%3D%224%22%20fill%3D%22%23fff1c9%22%2F%3E%3C%2Fsvg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D%22-15%200%20230%20230%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20x%3D%22-15%22%20width%3D%22230%22%20height%3D%22230%22%20fill%3D%22%2314151c%22%2F%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22lc%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffd98a%22%20stop-opacity%3D%22.6%22%2F%3E%3Cstop%20offset%3D%22.5%22%20stop-color%3D%22%23e9b44c%22%20stop-opacity%3D%22.2%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23e9b44c%22%20stop-opacity%3D%220%22%2F%3E%3C%2FlinearGradient%3E%3CradialGradient%20id%3D%22lg%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffe3a3%22%20stop-opacity%3D%22.9%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23ffe3a3%22%20stop-opacity%3D%220%22%2F%3E%3C%2FradialGradient%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M87%2066L113%2066L186%20230L14%20230Z%22%20fill%3D%22url%28%23lc%29%22%2F%3E%3Ccircle%20cx%3D%22100%22%20cy%3D%2266%22%20r%3D%2222%22%20fill%3D%22url%28%23lg%29%22%2F%3E%3Cpath%20d%3D%22M100%200V32%22%20stroke%3D%22%23e9b44c%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M72%2064Q72%2032%20100%2032Q128%2032%20128%2064Z%22%20fill%3D%22%23e9b44c%22%2F%3E%3Cellipse%20cx%3D%22100%22%20cy%3D%2265%22%20rx%3D%2210%22%20ry%3D%224%22%20fill%3D%22%23fff1c9%22%2F%3E%3C%2Fsvg%3E">
 <style>
 :root{
   --ink:#14151c;
@@ -42,6 +52,7 @@
   --dim:#7a7362;
   --rule:#ddd4c0;
 }
+[hidden]{display:none!important}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0;height:100%}
 body{
@@ -82,17 +93,6 @@ button{background:none;border:0;cursor:pointer}
   font-family:var(--serif);font-size:13px;letter-spacing:.22em;
   text-transform:uppercase;color:var(--dim);margin:6px 0 20px;
 }
-.shelf{display:flex;flex-direction:column;gap:1px;background:var(--rule);border-radius:14px;overflow:hidden}
-.book{
-  background:var(--bg);padding:16px 16px;display:flex;align-items:center;gap:14px;
-  text-align:left;width:100%;
-}
-.book:active{background:var(--surface)}
-.book .spine{width:4px;align-self:stretch;border-radius:2px;background:var(--amber);opacity:.75;flex:0 0 auto}
-.book .meta{flex:1;min-width:0}
-.book .t{font-family:var(--serif);font-size:18px;line-height:1.25;margin-bottom:4px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.book .s{font-size:12.5px;color:var(--dim);display:flex;gap:10px;align-items:center}
 .dot{width:7px;height:7px;border-radius:50%;display:inline-block}
 .empty{
   border:1px dashed var(--rule);border-radius:16px;padding:34px 24px;text-align:center;color:var(--dim);
@@ -229,6 +229,34 @@ button{background:none;border:0;cursor:pointer}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 :focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+/* ---------- landing: the bookcase ---------- */
+.hero{position:relative;text-align:center;padding:calc(var(--safe-t) + 10px) 0 0}
+.hero svg{width:min(60vw,220px);height:auto;display:block;margin:0 auto}
+.hero .wm{position:absolute;left:0;right:0;bottom:46px;font-family:var(--serif);font-size:27px;font-weight:600;letter-spacing:.04em}
+.hero .wm i{font-style:normal;color:var(--amber)}
+.hero .tg{position:absolute;left:0;right:0;bottom:24px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim)}
+.case{max-width:30rem;margin:-4px auto 0;padding:0 12px;position:relative}
+.case::before{content:"";position:absolute;inset:0 0 auto;height:280px;background:radial-gradient(ellipse at 50% 0,rgba(233,180,76,.17),transparent 70%);pointer-events:none}
+.row{position:relative;display:flex;align-items:flex-end;gap:3px;height:196px;padding:0 12px;box-shadow:inset 0 16px 18px -16px rgba(0,0,0,.4)}
+.plank{height:13px;border-radius:2px;background:linear-gradient(#8f6e45,#5b4328);box-shadow:0 7px 14px rgba(0,0,0,.35);margin-bottom:4px}
+.sp{position:relative;flex:0 0 auto;border-radius:3px 3px 1px 1px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(90deg,rgba(0,0,0,.3),transparent 22%,rgba(255,255,255,.09) 55%,rgba(0,0,0,.26)),var(--bg2);
+  color:var(--fg2);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);transition:transform .15s}
+.sp:active{transform:translateY(-7px)}
+.sp .st{writing-mode:vertical-rl;font-family:var(--serif);font-size:14px;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-height:calc(100% - 50px);padding-top:6px}
+.sp .band{position:absolute;left:0;right:0;top:11px;height:3px;background:var(--fg2);opacity:.5;box-shadow:0 6px 0 var(--fg2)}
+.sp .pip{position:absolute;bottom:9px;left:50%;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.slot{width:78px;height:112px;flex-direction:column;gap:9px;background:none!important;border:1.5px dashed var(--dim);border-radius:6px;color:var(--dim);box-shadow:none;padding:0 4px}
+.slot .plus{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(233,180,76,.16)}
+.slot .plus svg{width:18px;height:18px;stroke:var(--amber);fill:none;stroke-width:2;stroke-linecap:round}
+.slot span{font-size:11px;letter-spacing:.04em;line-height:1.2;text-align:center}
+.ver{text-align:center;font-size:11px;letter-spacing:.16em;color:var(--dim);opacity:.7;margin:22px 0 0;padding-bottom:calc(var(--safe-b) + 28px)}
+.dockhide{align-self:center;width:64px;height:18px;margin:-5px 0 -4px;display:grid;place-items:center;color:var(--dim)}
+.dockhide svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dockfab{position:fixed;right:14px;bottom:calc(var(--safe-b) + 14px);z-index:30;width:48px;height:48px;border-radius:50%;
+  display:grid;place-items:center;background:var(--surface-2);border:1px solid var(--rule);box-shadow:0 6px 20px rgba(0,0,0,.35)}
+.dockfab svg{width:21px;height:21px;stroke:var(--amber);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 </style>
 </head>
 <body>
@@ -237,7 +265,7 @@ button{background:none;border:0;cursor:pointer}
     <button class="iconbtn" id="navBtn" aria-label="Back">
       <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
-    <h1 id="title">Lamp</h1>
+    <h1 id="title">LampRead</h1>
     <button class="iconbtn" id="marksBtn" aria-label="Marks">
       <svg viewBox="0 0 24 24"><path d="M6 4h12v17l-6-4-6 4z"/></svg>
     </button>
@@ -247,6 +275,7 @@ button{background:none;border:0;cursor:pointer}
   </div>
   <div class="body" id="body"></div>
   <div class="dock" id="dock" hidden>
+    <button class="dockhide" id="dockHide" aria-label="Hide marking tools"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
     <div class="seg" role="group" aria-label="What a tap marks">
       <button data-mode="word" aria-pressed="true">Word</button>
       <button data-mode="sentence" aria-pressed="false">Sentence</button>
@@ -259,6 +288,7 @@ button{background:none;border:0;cursor:pointer}
     </div>
   </div>
 </div>
+<button class="dockfab" id="dockShow" aria-label="Show marking tools" hidden><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg></button>
 
 <div class="scrim" id="scrim"></div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
@@ -273,6 +303,7 @@ button{background:none;border:0;cursor:pointer}
    own phone/host. Same API either way.
    ============================================================ */
 const KEY = "lamp.v1";
+const VERSION = "0.2";
 const Store = {
   async get(k){
     if (typeof window.storage !== "undefined" && window.storage) {
@@ -301,7 +332,7 @@ const $ = s => document.querySelector(s);
 const uid = () => Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-3);
 const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-async function save(){ await Store.set(KEY, JSON.stringify(DB)); }
+async function save(){ DB.appVersion = VERSION; await Store.set(KEY, JSON.stringify(DB)); }
 function book(){ return DB.books.find(b => b.id === bookId) || null; }
 
 /* ============================================================
@@ -380,17 +411,23 @@ function parse(src){
 
 /* pull ==marks== out of a source file → clean source + highlight ranges */
 function extractMarks(src){
-  let clean = "", ranges = [], open = null, i = 0;
-  while (i < src.length){
-    if (src[i] === "=" && src[i+1] === "="){
-      if (open === null) open = clean.length;
-      else { ranges.push({ s: open, e: clean.length }); open = null; }
-      i += 2; continue;
-    }
-    clean += src[i]; i++;
+  // accept suggestions an editor or Claude may have made, drop the header comment
+  src = src.replace(/<!--\s*LampRead[\s\S]*?-->\s*/i, "")
+    .replace(/\{\+\+([\s\S]*?)\+\+\}/g, "$1").replace(/\{--[\s\S]*?--\}/g, "")
+    .replace(/\{~~[\s\S]*?~>([\s\S]*?)~~\}/g, "$1");
+  const re = /\{==([\s\S]*?)==\}(?:\{>>([\s\S]*?)<<\})?|==([^=\s][\s\S]*?)==|\{>>[\s\S]*?<<\}/g;
+  let clean = "", last = 0, m; const ranges = [];
+  while ((m = re.exec(src))){
+    clean += src.slice(last, m.index); last = re.lastIndex;
+    const txt = m[1] !== undefined ? m[1] : m[3];
+    if (txt === undefined) continue;                // stray comment: dropped
+    const s0 = clean.length; clean += txt;
+    let tag = "revisit", note = (m[2]||"").trim();
+    const t = /^\[(revisit|explain|loved)\]\s*/i.exec(note);
+    if (t){ tag = t[1].toLowerCase() === "explain" ? "word" : t[1].toLowerCase(); note = note.slice(t[0].length); }
+    ranges.push({ s: s0, e: clean.length, tag, note });
   }
-  if (open !== null) clean = clean; // unbalanced marker: ignore it
-  return { clean, ranges };
+  return { clean: clean + src.slice(last), ranges };
 }
 
 function rangesToHighlights(doc, ranges, tag){
@@ -401,7 +438,7 @@ function rangesToHighlights(doc, ranges, tag){
       bl.words.forEach((w, wi) => {
         if (w.e > r.s && w.s < r.e){ if (s < 0) s = wi; e = wi; }
       });
-      if (s >= 0) out.push({ id:uid(), b:bi, s, e, tag: tag||"revisit", note:"",
+      if (s >= 0) out.push({ id:uid(), b:bi, s, e, tag: r.tag||tag||"revisit", note: r.note||"",
                              text: bl.words.slice(s, e+1).map(w=>w.text).join(" ") });
     });
   });
@@ -510,17 +547,26 @@ function markSheet(hid){
 /* ============================================================
    export / import
    ============================================================ */
+const LAMP_NOTE = "<!-- LampRead: {==text==}{>>[tag] note<<} marks a passage the reader flagged (CriticMarkup). Tags: revisit = rework or reconsider, explain = clarify or simplify, loved = keep as is. To apply: revise each marked passage following its note, remove all markup and this comment, and return the clean markdown. -->\n\n";
 function withMarks(bk){
   const doc = parse(bk.source);
   const cuts = [];
   (bk.highlights||[]).forEach(h => {
     const bl = doc.blocks[h.b]; if (!bl || !bl.words[h.s] || !bl.words[h.e]) return;
-    cuts.push({ at: bl.words[h.s].s, ins: "==" }, { at: bl.words[h.e].e, ins: "==" });
+    const label = (TAGS[h.tag] ? TAGS[h.tag].label : h.tag).toLowerCase();
+    const note = (h.note||"").replace(/\s*\n\s*/g," ").replace(/<<\}/g,"<< }");
+    let a = bl.words[h.s].s, z = bl.words[h.e].e, a2 = a, z2 = z;   // keep *emphasis* pairs intact
+    while (a2 > 0 && /[*_`]/.test(bk.source[a2-1])) a2--;
+    while (/[*_`]/.test(bk.source[z2] || "")) z2++;
+    const seg = bk.source.slice(a2, z2);
+    if (!((seg.match(/\*/g)||[]).length % 2) && !((seg.match(/`/g)||[]).length % 2)){ a = a2; z = z2; }
+    cuts.push({ at: a, ins: "{==" },
+               { at: z, ins: `==}{>>[${label}]${note ? " " + note : ""}<<}` });
   });
   cuts.sort((a,b) => b.at - a.at);
   let out = bk.source;
   cuts.forEach(c => { out = out.slice(0, c.at) + c.ins + out.slice(c.at); });
-  return out;
+  return LAMP_NOTE + out;
 }
 
 function marksDoc(bk){
@@ -632,57 +678,37 @@ It was not a *brilliant* lamp. It gave a small, honest light, about the size of 
 One evening the wind pushed the window open, and the lamp went out.
 `;
 
+const SPINES = [["#7a3b3b","#f0d9a8"],["#2f5d62","#f0d9a8"],["#3d4a7a","#e9b44c"],["#6b5a3a","#f3e6c4"],["#4f3d63","#e9b44c"],["#375a43","#f0d9a8"],["#8a5a2b","#f7f2e7"]];
+const LOGO = `<svg viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LampRead"><defs><linearGradient id="lc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd98a" stop-opacity=".6"/><stop offset=".5" stop-color="#e9b44c" stop-opacity=".2"/><stop offset="1" stop-color="#e9b44c" stop-opacity="0"/></linearGradient><radialGradient id="lg"><stop offset="0" stop-color="#ffe3a3" stop-opacity=".9"/><stop offset="1" stop-color="#ffe3a3" stop-opacity="0"/></radialGradient></defs><path d="M87 66L113 66L186 230L14 230Z" fill="url(#lc)"/><circle cx="100" cy="66" r="22" fill="url(#lg)"/><path d="M100 0V32" stroke="#e9b44c" stroke-width="2.5" stroke-linecap="round"/><path d="M72 64Q72 32 100 32Q128 32 128 64Z" fill="#e9b44c"/><ellipse cx="100" cy="65" rx="10" ry="4" fill="#fff1c9"/></svg>`;
+function hashStr(s){ let h = 0; for (const c of s) h = (h*31 + c.charCodeAt(0)) >>> 0; return h; }
+
 function drawLibrary(){
-  $("#title").textContent = "Lamp";
-  $("#navBtn").hidden = true; $("#marksBtn").hidden = true; $("#menuBtn").hidden = false;
+  $("#navBtn").hidden = true; $("#marksBtn").hidden = true; $("#menuBtn").hidden = true;
   $("#dock").hidden = true;
-
   const books = [...DB.books].sort((a,b) => (b.updated||0) - (a.updated||0));
-  const shelf = books.length ? `<div class="shelf">${books.map(b => {
-      const n = (b.highlights||[]).length;
-      return `<button class="book" data-open="${b.id}">
-        <i class="spine" style="background:${n ? "var(--amber)" : "var(--rule)"}"></i>
-        <span class="meta">
-          <span class="t">${esc(b.title)}</span>
-          <span class="s">${n ? `<i class="dot" style="background:var(--amber)"></i>${n} mark${n===1?"":"s"}` : "no marks yet"}
-          <i>·</i>${Math.max(1, Math.round(b.source.split(/\s+/).length/130))} min aloud</span>
-        </span></button>`;
-    }).join("")}</div>`
-    : `<div class="empty"><p>The shelf is empty.</p>
-       <span>Bring in a markdown file, or start writing one here.</span></div>`;
-
-  $("#body").innerHTML = `<div class="pad">
-      <div class="lampmark">Books to read aloud</div>
-      ${shelf}
-      <div class="rowbtns">
-        <button class="btn primary" id="newBook">
-          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>New book</button>
-        <button class="btn" id="importBtn">
-          <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L8 8m4-4l4 4M4 17v2a1 1 0 001 1h14a1 1 0 001-1v-2"/></svg>Import .md</button>
-      </div></div>`;
-
-  $("#body").querySelectorAll("[data-open]").forEach(el => el.onclick = () => {
-    bookId = el.dataset.open; view = "reader"; draw();
-    $("#body").scrollTop = 0;
-  });
-  $("#newBook").onclick = newBook;
-  $("#importBtn").onclick = () => $("#fileInput").click();
-}
-
-function newBook(){
-  openSheet(`<h2>New book</h2>
-    <input class="field" id="bt" placeholder="Title" style="margin-top:12px">
-    <div class="sheetrow">
-      <button class="btn" id="cancelNew">Cancel</button>
-      <button class="btn primary" id="createNew">Create</button>
-    </div>`);
-  setTimeout(() => $("#bt").focus(), 250);
-  $("#cancelNew").onclick = closeSheet;
-  $("#createNew").onclick = () => {
-    const t = ($("#bt").value || "Untitled").trim();
-    const b = { id:uid(), title:t, source:`# ${t}\n\n`, highlights:[], created:Date.now(), updated:Date.now() };
-    DB.books.push(b); bookId = b.id; view = "editor"; save(); closeSheet(); draw();
+  const spine = b => {
+    const h = hashStr(b.title), [bg, fg] = SPINES[h % SPINES.length];
+    const n = (b.highlights||[]).length;
+    return `<button class="sp" data-open="${b.id}" aria-label="${esc(b.title)}"
+      style="--bg2:${bg};--fg2:${fg};height:${128 + (h >> 3) % 52}px;width:${38 + (h >> 5) % 20}px">
+      <i class="band"></i><span class="st">${esc(b.title)}</span>${n ? '<i class="pip"></i>' : ""}</button>`;
   };
+  const slot = `<button class="sp slot" id="importBtn" aria-label="Import book"><i class="plus"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></i><span>Import book</span></button>`;
+  const items = [...books.map(b => ({ w: 38 + (hashStr(b.title) >> 5) % 20, html: spine(b) })), { w: 78, html: slot }];
+  const rows = [[]]; let used = 0;
+  items.forEach(it => {
+    if (used + it.w + 3 > 288 && rows[rows.length-1].length){ rows.push([]); used = 0; }
+    rows[rows.length-1].push(it.html); used += it.w + 3;
+  });
+  while (rows.length < 3) rows.push([]);
+  $("#body").innerHTML = `
+    <div class="hero">${LOGO}<div class="wm">Lamp<i>Read</i></div><div class="tg">Stories by dad</div></div>
+    <div class="case">${rows.map(r => `<div class="row">${r.join("")}</div><div class="plank"></div>`).join("")}</div>
+    <p class="ver">v${VERSION}</p>`;
+  $("#body").querySelectorAll("[data-open]").forEach(el => el.onclick = () => {
+    bookId = el.dataset.open; view = "reader"; draw(); $("#body").scrollTop = 0;
+  });
+  $("#importBtn").onclick = () => $("#fileInput").click();
 }
 
 function drawReader(){
@@ -764,13 +790,21 @@ function commitEdit(){
   }
 }
 
+function syncDock(){
+  const reading = view === "reader", open = DB.settings.dock !== false;
+  $("#dock").hidden = !(reading && open);
+  $("#dockShow").hidden = !(reading && !open);
+}
+
 function draw(){
   document.documentElement.dataset.theme = DB.settings.theme === "day" ? "day" : "night";
   document.documentElement.style.setProperty("--read", DB.settings.read + "px");
+  $(".bar").style.display = view === "library" ? "none" : "";
   if (view === "library") drawLibrary();
   else if (view === "reader") drawReader();
   else if (view === "marks") drawMarks();
   else if (view === "editor") drawEditor();
+  syncDock();
   $("#dock").querySelectorAll("[data-mode]").forEach(b =>
     b.setAttribute("aria-pressed", b.dataset.mode === DB.settings.mode));
   $("#dock").querySelectorAll("[data-tag]").forEach(b =>
@@ -787,6 +821,8 @@ $("#navBtn").onclick = () => {
   draw();
 };
 $("#marksBtn").onclick = () => { view = "marks"; draw(); };
+$("#dockHide").onclick = () => { DB.settings.dock = false; save(); syncDock(); };
+$("#dockShow").onclick = () => { DB.settings.dock = true; save(); syncDock(); };
 
 $("#dock").querySelectorAll("[data-mode]").forEach(b => b.onclick = () => {
   DB.settings.mode = b.dataset.mode; save(); draw();
@@ -798,26 +834,24 @@ $("#dock").querySelectorAll("[data-tag]").forEach(b => b.onclick = () => {
 $("#menuBtn").onclick = () => {
   const bk = book();
   const ico = d => `<svg viewBox="0 0 24 24">${d}</svg>`;
-  openSheet(`<h2>${bk ? esc(bk.title) : "Lamp"}</h2>
+  openSheet(`<h2>${bk ? esc(bk.title) : "LampRead"}</h2>
     <div class="menu">
       ${bk ? `
       <button data-a="edit">${ico('<path d="M4 20h4L19 9l-4-4L4 16v4z"/>')}<span>Edit text<small>Write or fix the story</small></span></button>
-      <button data-a="exp-marks">${ico('<path d="M12 4v12m0 0l-4-4m4 4l4-4M4 18v2h16v-2"/>')}<span>Export with marks<small>Markdown, ==marked== inline</small></span></button>
+      <button data-a="exp-marks">${ico('<path d="M12 4v12m0 0l-4-4m4 4l4-4M4 18v2h16v-2"/>')}<span>Export with marks<small>Markdown, marks as inline comments</small></span></button>
       <button data-a="exp-clean">${ico('<path d="M7 4h7l5 5v11H7z"/><path d="M14 4v5h5"/>')}<span>Export clean copy<small>Just the story</small></span></button>
       <button data-a="rename">${ico('<path d="M5 12h14"/><path d="M9 6h10M9 18h10"/>')}<span>Rename</span></button>
       <button data-a="del" class="danger">${ico('<path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/>')}<span>Delete book</span></button>` : ""}
       <button data-a="theme">${ico('<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M6 6l1.5 1.5M16.5 16.5L18 18M18 6l-1.5 1.5M7.5 16.5L6 18"/>')}<span>${DB.settings.theme === "day" ? "Night reading" : "Day reading"}</span></button>
       <button data-a="bigger">${ico('<path d="M4 20L10 4l6 16M6.5 14h7"/><path d="M18 9v6M15 12h6"/>')}<span>Text size<small>Now ${DB.settings.read}px</small></span></button>
       <button data-a="backup">${ico('<path d="M12 4v12m0 0l-4-4m4 4l4-4M4 18v2h16v-2"/>')}<span>Back up everything<small>One .json with all books and marks</small></span></button>
-      <button data-a="import">${ico('<path d="M12 20V8m0 0L8 12m4-4l4 4M4 4h16"/>')}<span>Import files<small>.md files or a backup</small></span></button>
     </div>`);
   $("#sheet").querySelectorAll("[data-a]").forEach(el => el.onclick = () => {
     const a = el.dataset.a; closeSheet();
     if (a === "edit"){ view = "editor"; draw(); }
     if (a === "exp-marks") deliver(`${slug(bk.title)}.md`, withMarks(bk));
     if (a === "exp-clean") deliver(`${slug(bk.title)}-clean.md`, bk.source);
-    if (a === "backup") deliver(`lamp-backup-${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(DB,null,2), "application/json");
-    if (a === "import") $("#fileInput").click();
+    if (a === "backup") deliver(`lampread-backup-${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(DB,null,2), "application/json");
     if (a === "theme"){ DB.settings.theme = DB.settings.theme === "day" ? "night" : "day"; save(); draw(); }
     if (a === "bigger"){
       DB.settings.read = DB.settings.read >= 26 ? 17 : DB.settings.read + 3; save(); draw();
