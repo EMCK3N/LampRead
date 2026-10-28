@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <!--
   LampRead
+  v0.4.2  Bookshelf shows book covers (horizontal titles, chapter count) instead of spines.
+  v0.4.1  Day reading on a sand-coloured background (status bar follows).
+  v0.4    Books have chapters: import several files as one book, chapter list, next-chapter button,
+          export a chapter or the whole book. Old books migrate to one-chapter books automatically.
   v0.3.2  Icon linked as a real file, apple-touch-icon.png (keep it next to index.html).
   v0.3.1  Home-screen icon as PNG (iOS ignores SVG icons).
   v0.3  Reading tools panel: text size (smaller/larger) and day/night moved into the bottom dock.
@@ -14,7 +18,7 @@
   v0.1  Reader with word/sentence/paragraph marks, markdown import/export, backup.
 -->
 <meta name="application-name" content="LampRead">
-<meta name="version" content="0.3.2">
+<meta name="version" content="0.4.2">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -49,12 +53,12 @@
   --safe-b:env(safe-area-inset-bottom,0px);
 }
 [data-theme="day"]{
-  --bg:#f7f2e7;
-  --surface:#fffaf0;
-  --surface-2:#ece5d5;
+  --bg:#ede2c9;
+  --surface:#f6eddb;
+  --surface-2:#e0d3b5;
   --fg:#1e1f26;
-  --dim:#7a7362;
-  --rule:#ddd4c0;
+  --dim:#655c46;
+  --rule:#d2c4a3;
 }
 [hidden]{display:none!important}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -243,16 +247,27 @@ button{background:none;border:0;cursor:pointer}
 .hero .tg{position:absolute;left:0;right:0;bottom:24px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim)}
 .case{max-width:30rem;margin:-4px auto 0;padding:0 12px;position:relative}
 .case::before{content:"";position:absolute;inset:0 0 auto;height:280px;background:radial-gradient(ellipse at 50% 0,rgba(233,180,76,.17),transparent 70%);pointer-events:none}
-.row{position:relative;display:flex;align-items:flex-end;gap:3px;height:196px;padding:0 12px;box-shadow:inset 0 16px 18px -16px rgba(0,0,0,.4)}
+.row{position:relative;display:flex;align-items:flex-end;gap:10px;min-height:176px;padding:14px 12px 0;box-shadow:inset 0 16px 18px -16px rgba(0,0,0,.4)}
 .plank{height:13px;border-radius:2px;background:linear-gradient(#8f6e45,#5b4328);box-shadow:0 7px 14px rgba(0,0,0,.35);margin-bottom:4px}
-.sp{position:relative;flex:0 0 auto;border-radius:3px 3px 1px 1px;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(90deg,rgba(0,0,0,.3),transparent 22%,rgba(255,255,255,.09) 55%,rgba(0,0,0,.26)),var(--bg2);
-  color:var(--fg2);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);transition:transform .15s}
-.sp:active{transform:translateY(-7px)}
-.sp .st{writing-mode:vertical-rl;font-family:var(--serif);font-size:14px;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-height:calc(100% - 50px);padding-top:6px}
-.sp .band{position:absolute;left:0;right:0;top:11px;height:3px;background:var(--fg2);opacity:.5;box-shadow:0 6px 0 var(--fg2)}
-.sp .pip{position:absolute;bottom:9px;left:50%;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
-.slot{width:78px;height:112px;flex-direction:column;gap:9px;background:none!important;border:1.5px dashed var(--dim);border-radius:6px;color:var(--dim);box-shadow:none;padding:0 4px}
+.sp{position:relative;flex:0 0 calc((100% - 20px)/3);aspect-ratio:5/7;border-radius:3px 7px 7px 3px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;padding:13px 9px 11px 15px;
+  background:linear-gradient(90deg,rgba(0,0,0,.38) 0,rgba(255,255,255,.1) 5%,rgba(0,0,0,.2) 7%,transparent 12%),linear-gradient(180deg,rgba(255,255,255,.07),transparent 40%),var(--bg2);
+  color:var(--fg2);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07),0 6px 10px rgba(0,0,0,.3);transition:transform .15s;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
+.sp:active{transform:translateY(-5px)}
+.sp .st{font-family:var(--serif);font-size:14.5px;line-height:1.22;font-weight:600;letter-spacing:.01em;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.sp .mt{font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.7;min-height:12px}
+.sp .pip{position:absolute;top:10px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.chlist{display:flex;flex-direction:column;gap:8px;max-width:30rem;margin:0 auto}
+.chrow{display:flex;align-items:stretch;gap:6px}
+.chmain{flex:1;display:flex;align-items:center;gap:12px;padding:15px 14px;border:1px solid var(--rule);border-radius:12px;background:var(--surface);text-align:left}
+.chmain:active{background:var(--surface-2)}
+.chn{color:var(--amber);font-family:var(--serif);width:22px}
+.cht{flex:1;font-family:var(--serif);font-size:16px}
+.pip2{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.chmv{width:42px;border:1px solid var(--rule);border-radius:12px;color:var(--dim)}
+.chmv:disabled{opacity:.3}
+.chadd{justify-content:center;align-items:center;padding:15px;border:1.5px dashed var(--dim);border-radius:12px;color:var(--dim);font-size:14px}
+.chnav{display:flex;justify-content:center;padding:34px 0 8px}
+.slot{justify-content:center;align-items:center;flex-direction:column;gap:9px;background:none!important;border:1.5px dashed var(--dim);border-radius:6px;color:var(--dim);box-shadow:none;padding:0 4px}
 .slot .plus{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(233,180,76,.16)}
 .slot .plus svg{width:18px;height:18px;stroke:var(--amber);fill:none;stroke-width:2;stroke-linecap:round}
 .slot span{font-size:11px;letter-spacing:.04em;line-height:1.2;text-align:center}
@@ -324,7 +339,7 @@ button{background:none;border:0;cursor:pointer}
    own phone/host. Same API either way.
    ============================================================ */
 const KEY = "lamp.v1";
-const VERSION = "0.3.2";
+const VERSION = "0.4.2";
 const Store = {
   async get(k){
     if (typeof window.storage !== "undefined" && window.storage) {
@@ -343,7 +358,7 @@ const Store = {
 
 let DB = { books: [], settings:{ theme:"night", read:20, mode:"word", tag:"revisit" } };
 let view = "library";        // library | reader | editor | marks
-let bookId = null;
+let bookId = null, chapterId = null, importInto = null;
 let parsed = null;           // { blocks:[{type,words:[...]}] } for the open book
 const TAGS = { revisit:{label:"Revisit", css:"var(--amber)"},
                word:{label:"Explain", css:"var(--teal)"},
@@ -354,7 +369,26 @@ const uid = () => Math.random().toString(36).slice(2,9) + Date.now().toString(36
 const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 async function save(){ DB.appVersion = VERSION; await Store.set(KEY, JSON.stringify(DB)); }
-function book(){ return DB.books.find(b => b.id === bookId) || null; }
+function pbook(){ return DB.books.find(b => b.id === bookId) || null; }
+function book(){ const b = pbook(); return b ? (b.chapters.find(c => c.id === chapterId) || b.chapters[0]) : null; }   // the active chapter
+function normalizeBooks(){
+  DB.books.forEach(b => {
+    if (b.chapters) return;
+    b.chapters = [{ id: uid(), title: b.title, source: b.source || "", highlights: b.highlights || [], created: b.created, updated: b.updated }];
+    delete b.source; delete b.highlights;
+  });
+}
+function guessTitle(names, fallback){
+  let p = names[0]; names.forEach(n => { while (!n.startsWith(p)) p = p.slice(0, -1); });
+  p = p.replace(/[\s\-_.:,]*(kapitel|chapter|del|part|afsnit)?[\s\-_.:,\d]*$/i, "").trim();
+  return p.length > 1 ? p : fallback;
+}
+function bookWithMarks(pb){
+  return LAMP_NOTE + pb.chapters.map(c => {
+    const t = withMarks(c).slice(LAMP_NOTE.length);
+    return /^\s*#\s/.test(c.source) ? t : `# ${c.title}\n\n${t}`;
+  }).join("\n\n");
+}
 
 /* ============================================================
    markdown → blocks → words (with char offsets back into source)
@@ -616,31 +650,37 @@ async function deliver(name, text, mime){
 }
 
 function importFiles(list){
-  let added = 0, marks = 0;
-  const jobs = [...list].map(f => f.text().then(txt => {
-    if (f.name.endsWith(".json")){
-      try {
-        const data = JSON.parse(txt);
-        if (data && Array.isArray(data.books)){
-          data.books.forEach(b => { b.id = uid(); DB.books.push(b); added++; });
-        }
-      } catch(e){ toast("That backup file could not be read"); }
-      return;
-    }
-    const { clean, ranges } = extractMarks(txt);
-    const doc = parse(clean);
-    const hs = rangesToHighlights(doc, ranges, "revisit");
-    marks += hs.length; added++;
-    const h1 = /^#\s+(.+)$/m.exec(clean);
-    DB.books.push({
-      id: uid(),
-      title: (h1 ? h1[1] : f.name.replace(/\.(md|markdown|txt)$/i, "")).trim(),
-      source: clean, highlights: hs, created: Date.now(), updated: Date.now()
+  const target = importInto; importInto = null;
+  const files = [...list].sort((a,b) => a.name.localeCompare(b.name, undefined, { numeric:true }));
+  Promise.all(files.map(f => f.text().then(txt => ({ name:f.name, txt })))).then(items => {
+    const chapters = [], names = [];
+    items.forEach(({ name, txt }) => {
+      if (name.endsWith(".json")){
+        try {
+          const data = JSON.parse(txt);
+          if (data && Array.isArray(data.books)) data.books.forEach(b => { b.id = uid(); DB.books.push(b); });
+        } catch(e){ toast("That backup file could not be read"); }
+        return;
+      }
+      const { clean, ranges } = extractMarks(txt);
+      const hs = rangesToHighlights(parse(clean), ranges, "revisit");
+      const h1 = /^#\s+(.+)$/m.exec(clean), base = name.replace(/\.(md|markdown|txt)$/i, "");
+      chapters.push({ id: uid(), title: (h1 ? h1[1] : base).trim(), source: clean, highlights: hs, created: Date.now(), updated: Date.now() });
+      names.push(base);
     });
-  }));
-  Promise.all(jobs).then(() => {
-    save(); draw();
-    toast(added ? `Added ${added} ${added===1?"book":"books"}${marks?`, ${marks} marks`:""}` : "Nothing to import");
+    const mk = (title, chs) => DB.books.push({ id: uid(), title, chapters: chs, created: Date.now(), updated: Date.now() });
+    const finish = msg => { normalizeBooks(); save(); draw(); toast(msg); };
+    const n = chapters.length;
+    if (!n) return finish(items.length ? "Backup imported" : "Nothing to import");
+    const b = target && DB.books.find(x => x.id === target);
+    if (b){ b.chapters.push(...chapters); b.updated = Date.now(); return finish(`Added ${n} ${n === 1 ? "chapter" : "chapters"}`); }
+    if (n === 1){ mk(chapters[0].title, chapters); return finish("Added 1 book"); }
+    const guess = guessTitle(names, chapters[0].title);
+    openSheet(`<h2>${n} files</h2>
+      <input class="field" id="bkT" value="${esc(guess)}" style="margin-top:12px" aria-label="Book title">
+      <div class="sheetrow"><button class="btn" id="sep">${n} separate books</button><button class="btn primary" id="one">One book, ${n} chapters</button></div>`);
+    $("#one").onclick = () => { const t = $("#bkT").value.trim() || guess; closeSheet(); mk(t, chapters); finish(`Added “${t}”, ${n} chapters`); };
+    $("#sep").onclick = () => { closeSheet(); chapters.forEach(c => mk(c.title, [c])); finish(`Added ${n} books`); };
   });
 }
 
@@ -703,33 +743,47 @@ const SPINES = [["#7a3b3b","#f0d9a8"],["#2f5d62","#f0d9a8"],["#3d4a7a","#e9b44c"
 const LOGO = `<svg viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LampRead"><defs><linearGradient id="lc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd98a" stop-opacity=".6"/><stop offset=".5" stop-color="#e9b44c" stop-opacity=".2"/><stop offset="1" stop-color="#e9b44c" stop-opacity="0"/></linearGradient><radialGradient id="lg"><stop offset="0" stop-color="#ffe3a3" stop-opacity=".9"/><stop offset="1" stop-color="#ffe3a3" stop-opacity="0"/></radialGradient></defs><path d="M87 66L113 66L186 230L14 230Z" fill="url(#lc)"/><circle cx="100" cy="66" r="22" fill="url(#lg)"/><path d="M100 0V32" stroke="#e9b44c" stroke-width="2.5" stroke-linecap="round"/><path d="M72 64Q72 32 100 32Q128 32 128 64Z" fill="#e9b44c"/><ellipse cx="100" cy="65" rx="10" ry="4" fill="#fff1c9"/></svg>`;
 function hashStr(s){ let h = 0; for (const c of s) h = (h*31 + c.charCodeAt(0)) >>> 0; return h; }
 
+const touched = b => Math.max(b.updated||0, ...b.chapters.map(c => c.updated||0));
 function drawLibrary(){
   $("#navBtn").hidden = true; $("#marksBtn").hidden = true; $("#menuBtn").hidden = true;
   $("#dock").hidden = true;
-  const books = [...DB.books].sort((a,b) => (b.updated||0) - (a.updated||0));
-  const spine = b => {
-    const h = hashStr(b.title), [bg, fg] = SPINES[h % SPINES.length];
-    const n = (b.highlights||[]).length;
-    return `<button class="sp" data-open="${b.id}" aria-label="${esc(b.title)}"
-      style="--bg2:${bg};--fg2:${fg};height:${128 + (h >> 3) % 52}px;width:${38 + (h >> 5) % 20}px">
-      <i class="band"></i><span class="st">${esc(b.title)}</span>${n ? '<i class="pip"></i>' : ""}</button>`;
+  const books = [...DB.books].sort((a,b) => touched(b) - touched(a));
+  const cover = b => {
+    const [bg, fg] = SPINES[hashStr(b.title) % SPINES.length], c = b.chapters.length;
+    const n = b.chapters.reduce((a, x) => a + (x.highlights||[]).length, 0);
+    return `<button class="sp" data-open="${b.id}" aria-label="${esc(b.title)}" style="--bg2:${bg};--fg2:${fg}">
+      <span class="st">${esc(b.title)}</span><span class="mt">${c > 1 ? c + " chapters" : ""}</span>${n ? '<i class="pip"></i>' : ""}</button>`;
   };
   const slot = `<button class="sp slot" id="importBtn" aria-label="Import book"><i class="plus"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></i><span>Import book</span></button>`;
-  const items = [...books.map(b => ({ w: 38 + (hashStr(b.title) >> 5) % 20, html: spine(b) })), { w: 78, html: slot }];
-  const rows = [[]]; let used = 0;
-  items.forEach(it => {
-    if (used + it.w + 3 > 288 && rows[rows.length-1].length){ rows.push([]); used = 0; }
-    rows[rows.length-1].push(it.html); used += it.w + 3;
-  });
+  const items = [...books.map(cover), slot];
+  const rows = [];
+  for (let i = 0; i < items.length; i += 3) rows.push(items.slice(i, i + 3));
   while (rows.length < 3) rows.push([]);
   $("#body").innerHTML = `
     <div class="hero">${LOGO}<div class="wm">Lamp<i>Read</i></div><div class="tg">Stories by dad</div></div>
     <div class="case">${rows.map(r => `<div class="row">${r.join("")}</div><div class="plank"></div>`).join("")}</div>
     <p class="ver">v${VERSION}</p>`;
   $("#body").querySelectorAll("[data-open]").forEach(el => el.onclick = () => {
-    bookId = el.dataset.open; view = "reader"; draw(); $("#body").scrollTop = 0;
+    bookId = el.dataset.open; const pb = pbook(); chapterId = pb.chapters[0].id; view = pb.chapters.length > 1 ? "chapters" : "reader"; draw(); $("#body").scrollTop = 0;
   });
-  $("#importBtn").onclick = () => $("#fileInput").click();
+  $("#importBtn").onclick = () => { importInto = null; $("#fileInput").click(); };
+}
+
+function drawChapters(){
+  const b = pbook(); if (!b){ view = "library"; return draw(); }
+  $("#title").textContent = b.title;
+  $("#navBtn").hidden = false; $("#marksBtn").hidden = true; $("#menuBtn").hidden = false;
+  $("#dock").hidden = true;
+  const last = b.chapters.length - 1;
+  $("#body").innerHTML = `<div class="pad"><div class="chlist">${b.chapters.map((c, i) => `
+    <div class="chrow"><button class="chmain" data-ch="${c.id}"><span class="chn">${i + 1}</span><span class="cht">${esc(c.title)}</span>${(c.highlights||[]).length ? '<i class="pip2"></i>' : ""}</button>
+    <button class="chmv" data-up="${i}" aria-label="Move up" ${i ? "" : "disabled"}>↑</button><button class="chmv" data-dn="${i}" aria-label="Move down" ${i < last ? "" : "disabled"}>↓</button></div>`).join("")}
+    <button class="chrow chadd" id="addCh">+ Add chapters</button></div></div>`;
+  $("#body").querySelectorAll("[data-ch]").forEach(el => el.onclick = () => { chapterId = el.dataset.ch; view = "reader"; draw(); $("#body").scrollTop = 0; });
+  const mv = (i, d) => { const a = b.chapters; [a[i], a[i + d]] = [a[i + d], a[i]]; save(); draw(); };
+  $("#body").querySelectorAll("[data-up]").forEach(el => el.onclick = () => mv(+el.dataset.up, -1));
+  $("#body").querySelectorAll("[data-dn]").forEach(el => el.onclick = () => mv(+el.dataset.dn, 1));
+  $("#addCh").onclick = () => { importInto = b.id; $("#fileInput").click(); };
 }
 
 function drawReader(){
@@ -738,6 +792,11 @@ function drawReader(){
   $("#navBtn").hidden = false; $("#marksBtn").hidden = false; $("#menuBtn").hidden = false;
   $("#dock").hidden = false;
   $("#body").innerHTML = renderPage();
+  const pb = pbook(), nx = pb.chapters[pb.chapters.findIndex(c => c.id === bk.id) + 1];
+  if (pb.chapters.length > 1){
+    ($("#body .page") || $("#body")).insertAdjacentHTML("beforeend", `<div class="chnav">${nx ? `<button class="btn primary" id="nextCh">Next: ${esc(nx.title)} →</button>` : '<button class="btn" id="allCh">All chapters</button>'}</div>`);
+    ($("#nextCh") || $("#allCh")).onclick = () => { if (nx){ chapterId = nx.id; draw(); $("#body").scrollTop = 0; } else { view = "chapters"; draw(); } };
+  }
   document.documentElement.style.setProperty("--read", DB.settings.read + "px");
 
   $("#body").querySelectorAll(".w").forEach(el => {
@@ -804,7 +863,7 @@ function commitEdit(){
     const lost = reanchor(bk, next);
     bk.source = next;
     const h1 = /^#\s+(.+)$/m.exec(next);
-    if (h1) bk.title = h1[1].trim();
+    if (h1){ bk.title = h1[1].trim(); const pb = pbook(); if (pb.chapters.length === 1) pb.title = bk.title; }
     bk.updated = Date.now();
     save();
     toast(lost ? `Saved — ${lost} mark${lost===1?"":"s"} no longer matched the text` : "Saved");
@@ -816,6 +875,7 @@ const MOON = '<svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 101
 function syncReadControls(){
   const day = DB.settings.theme === "day";
   document.documentElement.dataset.theme = day ? "day" : "night";
+  document.querySelector('meta[name="theme-color"]').content = day ? "#ede2c9" : "#14151c";
   document.documentElement.style.setProperty("--read", DB.settings.read + "px");
   $("#szVal").textContent = DB.settings.read + " px";
   $("#themeBtn").innerHTML = (day ? MOON : SUN) + (day ? "Night" : "Day");
@@ -834,6 +894,7 @@ function draw(){
   else if (view === "reader") drawReader();
   else if (view === "marks") drawMarks();
   else if (view === "editor") drawEditor();
+  else if (view === "chapters") drawChapters();
   syncDock();
   $("#dock").querySelectorAll("[data-mode]").forEach(b =>
     b.setAttribute("aria-pressed", b.dataset.mode === DB.settings.mode));
@@ -847,6 +908,7 @@ function draw(){
 $("#navBtn").onclick = () => {
   if (view === "editor"){ commitEdit(); view = "reader"; }
   else if (view === "marks") view = "reader";
+  else if (view === "reader" && pbook().chapters.length > 1) view = "chapters";
   else { view = "library"; bookId = null; }
   draw();
 };
@@ -866,14 +928,16 @@ $("#dock").querySelectorAll("[data-tag]").forEach(b => b.onclick = () => {
 });
 
 $("#menuBtn").onclick = () => {
-  const bk = book();
+  const pb = pbook(), bk = view === "reader" ? book() : null, multi = !!pb && pb.chapters.length > 1;
   const ico = d => `<svg viewBox="0 0 24 24">${d}</svg>`;
-  openSheet(`<h2>${bk ? esc(bk.title) : "LampRead"}</h2>
+  openSheet(`<h2>${pb ? esc(pb.title) : "LampRead"}</h2>
     <div class="menu">
       ${bk ? `
       <button data-a="edit">${ico('<path d="M4 20h4L19 9l-4-4L4 16v4z"/>')}<span>Edit text<small>Write or fix the story</small></span></button>
-      <button data-a="exp-marks">${ico('<path d="M12 4v12m0 0l-4-4m4 4l4-4M4 18v2h16v-2"/>')}<span>Export with marks<small>Markdown, marks as inline comments</small></span></button>
-      <button data-a="exp-clean">${ico('<path d="M7 4h7l5 5v11H7z"/><path d="M14 4v5h5"/>')}<span>Export clean copy<small>Just the story</small></span></button>
+      <button data-a="exp-marks">${ico('<path d="M12 4v12m0 0l-4-4m4 4l4-4M4 18v2h16v-2"/>')}<span>Export ${multi ? "chapter" : "book"} with marks<small>Markdown, marks as inline comments</small></span></button>
+      <button data-a="exp-clean">${ico('<path d="M7 4h7l5 5v11H7z"/><path d="M14 4v5h5"/>')}<span>Export ${multi ? "chapter" : "book"} clean<small>Just the story</small></span></button>` : ""}
+      ${multi ? `<button data-a="exp-book">${ico('<path d="M4 5h6a2 2 0 012 2v12a2 2 0 00-2-2H4zM20 5h-6a2 2 0 00-2 2v12a2 2 0 012-2h6z"/>')}<span>Export whole book<small>All ${pb.chapters.length} chapters in one file, marks included</small></span></button>` : ""}
+      ${pb ? `
       <button data-a="rename">${ico('<path d="M5 12h14"/><path d="M9 6h10M9 18h10"/>')}<span>Rename</span></button>
       <button data-a="del" class="danger">${ico('<path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/>')}<span>Delete book</span></button>` : ""}
       <button data-a="backup">${ico('<path d="M12 4v12m0 0l-4-4m4 4l4-4M4 18v2h16v-2"/>')}<span>Back up everything<small>One .json with all books and marks</small></span></button>
@@ -881,22 +945,24 @@ $("#menuBtn").onclick = () => {
   $("#sheet").querySelectorAll("[data-a]").forEach(el => el.onclick = () => {
     const a = el.dataset.a; closeSheet();
     if (a === "edit"){ view = "editor"; draw(); }
-    if (a === "exp-marks") deliver(`${slug(bk.title)}.md`, withMarks(bk));
-    if (a === "exp-clean") deliver(`${slug(bk.title)}-clean.md`, bk.source);
+    const fn = bk && (multi ? `${slug(pb.title)}-${slug(bk.title)}` : slug(pb.title));
+    if (a === "exp-book") deliver(`${slug(pb.title)}.md`, bookWithMarks(pb));
+    if (a === "exp-marks") deliver(`${fn}.md`, withMarks(bk));
+    if (a === "exp-clean") deliver(`${fn}-clean.md`, bk.source);
     if (a === "backup") deliver(`lampread-backup-${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(DB,null,2), "application/json");
     if (a === "rename"){
-      openSheet(`<h2>Rename</h2><input class="field" id="rn" value="${esc(bk.title)}" style="margin-top:12px">
+      openSheet(`<h2>Rename</h2><input class="field" id="rn" value="${esc(pb.title)}" style="margin-top:12px">
         <div class="sheetrow"><button class="btn" id="rnc">Cancel</button><button class="btn primary" id="rno">Save</button></div>`);
       $("#rnc").onclick = closeSheet;
-      $("#rno").onclick = () => { bk.title = $("#rn").value.trim() || bk.title; bk.updated = Date.now(); save(); closeSheet(); draw(); };
+      $("#rno").onclick = () => { pb.title = $("#rn").value.trim() || pb.title; pb.updated = Date.now(); save(); closeSheet(); draw(); };
     }
     if (a === "del"){
-      openSheet(`<h2>Delete “${esc(bk.title)}”?</h2>
+      openSheet(`<h2>Delete “${esc(pb.title)}”?</h2>
         <div class="quote">Its marks go with it. Export first if you want to keep them.</div>
         <div class="sheetrow"><button class="btn" id="dc">Keep it</button><button class="btn danger" id="dd">Delete</button></div>`);
       $("#dc").onclick = closeSheet;
       $("#dd").onclick = () => {
-        DB.books = DB.books.filter(x => x.id !== bk.id);
+        DB.books = DB.books.filter(x => x.id !== pb.id);
         bookId = null; view = "library"; save(); closeSheet(); draw(); toast("Deleted");
       };
     }
@@ -913,12 +979,13 @@ window.addEventListener("pagehide", () => { if (view === "editor") commitEdit();
   const raw = await Store.get(KEY);
   if (raw){ try { DB = Object.assign(DB, JSON.parse(raw)); } catch(e){} }
   if (!DB.settings) DB.settings = { theme:"night", read:20, mode:"word", tag:"revisit" };
+  normalizeBooks();
   if (!DB.books.length){
     DB.books.push({ id:uid(), title:"The Night the Lamp Went Out", source:SAMPLE,
                     highlights:[], created:Date.now(), updated:Date.now() });
     await save();
   }
-  draw();
+  normalizeBooks(); draw();
 })();
 </script>
 </body>
