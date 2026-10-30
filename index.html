@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <!--
   LampRead
+  v0.5.3  Smoother drag: press feedback, the picked-up book follows your finger smoothly, forgiving drop targets,
+          merge only after a short hover, insertion bar, hint while dragging, drag never drops if the touch is cancelled.
+  v0.5.2  Shelf is a normal scroll again (no endless loop): books slide up behind the lamp, scroll back to the start
+          and the lamp and slogan unfold again.
+  v0.5.1  Lamp header collapses once (no zoom in/out while looping), light cone now follows the lamp and
+          starts at the shade rim, steadier endless shelf (no jumps while touching).
+  v0.5    Landing: lamp header collapses on scroll (cone keeps lighting the shelf), endless looping shelf,
+          long-press drag to reorder books, drop on a book to merge, split chapters out again.
   v0.4.2  Bookshelf shows book covers (horizontal titles, chapter count) instead of spines.
   v0.4.1  Day reading on a sand-coloured background (status bar follows).
   v0.4    Books have chapters: import several files as one book, chapter list, next-chapter button,
@@ -18,7 +26,7 @@
   v0.1  Reader with word/sentence/paragraph marks, markdown import/export, backup.
 -->
 <meta name="application-name" content="LampRead">
-<meta name="version" content="0.4.2">
+<meta name="version" content="0.5.3">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -240,13 +248,7 @@ button{background:none;border:0;cursor:pointer}
 :focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 
 /* ---------- landing: the bookcase ---------- */
-.hero{position:relative;text-align:center;padding:calc(var(--safe-t) + 10px) 0 0}
-.hero svg{width:min(60vw,220px);height:auto;display:block;margin:0 auto}
-.hero .wm{position:absolute;left:0;right:0;bottom:46px;font-family:var(--serif);font-size:27px;font-weight:600;letter-spacing:.04em}
-.hero .wm i{font-style:normal;color:var(--amber)}
-.hero .tg{position:absolute;left:0;right:0;bottom:24px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim)}
-.case{max-width:30rem;margin:-4px auto 0;padding:0 12px;position:relative}
-.case::before{content:"";position:absolute;inset:0 0 auto;height:280px;background:radial-gradient(ellipse at 50% 0,rgba(233,180,76,.17),transparent 70%);pointer-events:none}
+.case{max-width:30rem;margin:0 auto;padding:calc(240px + var(--safe-t)) 12px calc(var(--safe-b) + 50px);position:relative}
 .row{position:relative;display:flex;align-items:flex-end;gap:10px;min-height:176px;padding:14px 12px 0;box-shadow:inset 0 16px 18px -16px rgba(0,0,0,.4)}
 .plank{height:13px;border-radius:2px;background:linear-gradient(#8f6e45,#5b4328);box-shadow:0 7px 14px rgba(0,0,0,.35);margin-bottom:4px}
 .sp{position:relative;flex:0 0 calc((100% - 20px)/3);aspect-ratio:5/7;border-radius:3px 7px 7px 3px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;padding:13px 9px 11px 15px;
@@ -256,6 +258,23 @@ button{background:none;border:0;cursor:pointer}
 .sp .st{font-family:var(--serif);font-size:14.5px;line-height:1.22;font-weight:600;letter-spacing:.01em;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
 .sp .mt{font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.7;min-height:12px}
 .sp .pip{position:absolute;top:10px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.libhead{position:fixed;left:0;right:0;top:0;z-index:20;height:calc(var(--hh,240px) + var(--safe-t));pointer-events:none;background:linear-gradient(var(--bg) 0,var(--bg) 52%,transparent)}
+.hl{position:absolute;left:50%;top:calc(var(--safe-t) + 8px);width:var(--lw,100px);transform:translateX(-50%)}
+.hl svg{display:block;width:100%;height:auto;overflow:visible}
+.libhead .wm{position:absolute;left:0;right:0;bottom:50px;text-align:center;font-family:var(--serif);font-size:27px;font-weight:600;letter-spacing:.04em;opacity:calc(1 - var(--p,0)*2.4)}
+.libhead .wm i{font-style:normal;color:var(--amber)}
+.libhead .tg{position:absolute;left:0;right:0;bottom:26px;text-align:center;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);opacity:calc(1 - var(--p,0)*4)}
+.cone{position:fixed;left:50%;top:calc(var(--safe-t) + 8px + var(--lw,100px)*.8);width:min(82vw,320px);height:340px;transform:translateX(-50%);pointer-events:none;
+  clip-path:polygon(calc(50% - var(--lw,100px)*.35) 0,calc(50% + var(--lw,100px)*.35) 0,100% 100%,0 100%);background:linear-gradient(rgba(255,217,138,.55),rgba(233,180,76,.2) 45%,transparent)}
+.sp,.chrow{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.dragging{opacity:.25}
+.ghost{position:fixed;z-index:200;pointer-events:none;margin:0;flex:none!important;transition:none!important;will-change:transform;box-shadow:0 14px 30px rgba(0,0,0,.45)}
+.pressing{transform:scale(.955)!important;transition:transform .3s!important}
+.dropbar{position:fixed;left:0;top:0;z-index:190;width:4px;height:0;border-radius:3px;background:var(--amber);box-shadow:0 0 10px var(--amber);pointer-events:none;opacity:0;transition:transform .09s,opacity .1s}
+.draghint{position:fixed;left:50%;bottom:calc(var(--safe-b) + 22px);transform:translateX(-50%);z-index:210;padding:9px 14px;border-radius:999px;background:var(--surface-2);color:var(--fg);font-size:12.5px;box-shadow:0 6px 18px rgba(0,0,0,.4);pointer-events:none;white-space:nowrap}
+.drop-on{transform:scale(1.07)!important;outline:2px solid var(--amber);outline-offset:3px;box-shadow:0 0 18px rgba(233,180,76,.5)!important}
+.outzone{position:fixed;left:12px;right:12px;top:calc(var(--safe-t) + 62px);z-index:150;height:54px;display:grid;place-items:center;border:1.5px dashed var(--amber);border-radius:12px;background:color-mix(in srgb,var(--bg) 88%,transparent);color:var(--amber);font-size:13.5px}
+.outzone.hot{background:rgba(233,180,76,.22)}
 .chlist{display:flex;flex-direction:column;gap:8px;max-width:30rem;margin:0 auto}
 .chrow{display:flex;align-items:stretch;gap:6px}
 .chmain{flex:1;display:flex;align-items:center;gap:12px;padding:15px 14px;border:1px solid var(--rule);border-radius:12px;background:var(--surface);text-align:left}
@@ -263,7 +282,7 @@ button{background:none;border:0;cursor:pointer}
 .chn{color:var(--amber);font-family:var(--serif);width:22px}
 .cht{flex:1;font-family:var(--serif);font-size:16px}
 .pip2{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
-.chmv{width:42px;border:1px solid var(--rule);border-radius:12px;color:var(--dim)}
+.chmv{width:38px;border:1px solid var(--rule);border-radius:12px;color:var(--dim)}
 .chmv:disabled{opacity:.3}
 .chadd{justify-content:center;align-items:center;padding:15px;border:1.5px dashed var(--dim);border-radius:12px;color:var(--dim);font-size:14px}
 .chnav{display:flex;justify-content:center;padding:34px 0 8px}
@@ -271,7 +290,7 @@ button{background:none;border:0;cursor:pointer}
 .slot .plus{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(233,180,76,.16)}
 .slot .plus svg{width:18px;height:18px;stroke:var(--amber);fill:none;stroke-width:2;stroke-linecap:round}
 .slot span{font-size:11px;letter-spacing:.04em;line-height:1.2;text-align:center}
-.ver{text-align:center;font-size:11px;letter-spacing:.16em;color:var(--dim);opacity:.7;margin:22px 0 0;padding-bottom:calc(var(--safe-b) + 28px)}
+.ver{position:fixed;left:0;right:0;bottom:calc(var(--safe-b) + 6px);text-align:center;font-size:11px;letter-spacing:.16em;color:var(--dim);opacity:.6;margin:0;pointer-events:none;z-index:18}
 .dockhead{margin:0 -12px;height:44px;display:flex;align-items:center;justify-content:center;gap:6px;color:var(--dim);font-size:12.5px;letter-spacing:.06em}
 .dockhead:active{color:var(--fg)}
 .dockhead svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -339,7 +358,7 @@ button{background:none;border:0;cursor:pointer}
    own phone/host. Same API either way.
    ============================================================ */
 const KEY = "lamp.v1";
-const VERSION = "0.4.2";
+const VERSION = "0.5.3";
 const Store = {
   async get(k){
     if (typeof window.storage !== "undefined" && window.storage) {
@@ -739,34 +758,159 @@ It was not a *brilliant* lamp. It gave a small, honest light, about the size of 
 One evening the wind pushed the window open, and the lamp went out.
 `;
 
+let dragging = null, justDragged = false;
+document.addEventListener("touchmove", e => { if (dragging) e.preventDefault(); }, { passive:false });
+
+// long-press to pick something up, drag it, drop it: o = { axis, merge, out, hint, onDrop(id, {t, id}) }
+function enableDrag(root, itemSel, o){
+  let timer = 0, press = 0, d = null, raf = 0, sx = 0, sy = 0, st0 = 0, el0 = null, lit = null;
+  const bar = document.createElement("div"); bar.className = "dropbar";
+  const hint = document.createElement("div"); hint.className = "draghint"; hint.textContent = o.hint || "";
+  const pt = e => (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]) || e;
+  const idOf = el => el.dataset.open || el.dataset.cid;
+  const light = el => { if (el === lit) return; if (lit) lit.classList.remove("drop-on"); lit = el; if (el) el.classList.add("drop-on"); };
+  const unpress = () => { clearTimeout(timer); clearTimeout(press); timer = press = 0; if (el0) el0.classList.remove("pressing"); };
+  const hit = now => {
+    if (o.out){
+      const r = o.out.getBoundingClientRect(), on = d.y > r.top && d.y < r.bottom;
+      o.out.classList.toggle("hot", on);
+      if (on){ d.tgt = { t:"out" }; d.hover = null; light(null); bar.style.opacity = 0; return; }
+    }
+    let T = null, tr = null, best = 1e9;                 // nearest item, with 8px of slack so gaps never lose the grip
+    root.querySelectorAll(itemSel).forEach(it => {
+      if (idOf(it) === d.id) return;
+      const r = it.getBoundingClientRect();
+      if (d.x < r.left - 8 || d.x > r.right + 8 || d.y < r.top - 8 || d.y > r.bottom + 8) return;
+      const dist = Math.hypot(d.x - (r.left + r.right) / 2, d.y - (r.top + r.bottom) / 2);
+      if (dist < best){ best = dist; T = it; tr = r; }
+    });
+    if (!T){ d.tgt = null; d.hover = null; light(null); bar.style.opacity = 0; return; }
+    const id = idOf(T);
+    if (d.hover !== id){ d.hover = id; d.since = now; }
+    const fx = (d.x - tr.left) / tr.width - .5, fy = (d.y - tr.top) / tr.height - .5;
+    const keep = d.tgt && d.tgt.t === "on" && d.tgt.id === id, lim = keep ? .42 : .24;
+    const center = o.merge && Math.abs(fx) < lim && Math.abs(fy) < lim + .1;
+    const t = center && (keep || now - d.since > 260) ? "on" : (o.axis === "x" ? fx : fy) < 0 ? "before" : "after";
+    d.tgt = { t, id };
+    light(t === "on" ? T : null);
+    if (t === "on"){ bar.style.opacity = 0; return; }
+    const b = t === "before";
+    const k = o.axis === "x" ? `translate(${b ? tr.left - 7 : tr.right + 3}px,${tr.top}px)` : `translate(${tr.left}px,${b ? tr.top - 6 : tr.bottom + 2}px)`;
+    if (bar._k !== k){ bar._k = k; bar.style.transform = k; }
+    bar.style.width = o.axis === "x" ? "4px" : tr.width + "px"; bar.style.height = o.axis === "x" ? tr.height + "px" : "4px"; bar.style.opacity = 1;
+  };
+  const tick = now => {
+    if (!d) return;
+    d.px += (d.x - d.px) * .45; d.py += (d.y - d.py) * .45; d.s += (1.07 - d.s) * .3;   // the book glides after your finger
+    d.g.style.transform = `translate3d(${d.px - d.sx}px,${d.py - d.sy}px,0) scale(${d.s})`;
+    const sc = $("#body"), h = window.innerHeight;
+    if (!o.out && d.y < 150) sc.scrollTop -= Math.min(12, (150 - d.y) / 7);
+    else if (d.y > h - 110) sc.scrollTop += Math.min(12, (d.y - (h - 110)) / 6);
+    if (now - d.last > 60){ d.last = now; hit(now); }
+    raf = requestAnimationFrame(tick);
+  };
+  const begin = (el, p) => {
+    unpress();
+    const r = el.getBoundingClientRect(), g = el.cloneNode(true);
+    g.classList.remove("pressing"); g.classList.add("ghost");
+    g.style.cssText = `width:${r.width}px;height:${r.height}px;left:${r.left}px;top:${r.top}px`;
+    document.body.append(g, bar, hint);
+    const id = idOf(el);
+    root.querySelectorAll(`[data-open="${id}"],[data-cid="${id}"]`).forEach(x => x.classList.add("dragging"));
+    d = dragging = { id, g, sx: p.clientX, sy: p.clientY, x: p.clientX, y: p.clientY, px: p.clientX, py: p.clientY, s: 1, tgt: null, hover: null, since: 0, last: 0 };
+    if (navigator.vibrate) navigator.vibrate(12);
+    if (o.out) o.out.hidden = false;
+    raf = requestAnimationFrame(tick);
+  };
+  const move = e => {
+    const p = pt(e);
+    if (!d){ if (timer && (Math.hypot(p.clientX - sx, p.clientY - sy) > 12 || Math.abs($("#body").scrollTop - st0) > 3)) unpress(); return; }
+    d.x = p.clientX; d.y = p.clientY;
+  };
+  const end = commit => {
+    unpress(); document.removeEventListener("mousemove", move);
+    if (!d) return;
+    cancelAnimationFrame(raf); d.g.remove(); bar.remove(); hint.remove(); light(null);
+    if (o.out){ o.out.hidden = true; o.out.classList.remove("hot"); }
+    root.querySelectorAll(".dragging").forEach(x => x.classList.remove("dragging"));
+    const { id, tgt } = d; d = dragging = null; justDragged = true; setTimeout(() => justDragged = false, 350);
+    if (commit && tgt) o.onDrop(id, tgt);
+  };
+  const down = e => {
+    const el = e.target.closest(itemSel); if (!el || e.target.closest(".chmv") || e.button) return;
+    const p = pt(e); sx = p.clientX; sy = p.clientY; st0 = $("#body").scrollTop; el0 = el;
+    press = setTimeout(() => el.classList.add("pressing"), 120);
+    timer = setTimeout(() => begin(el, p), 450);
+    if (e.type === "mousedown"){ document.addEventListener("mousemove", move); document.addEventListener("mouseup", () => end(true), { once:true }); }
+  };
+  root.addEventListener("touchstart", down, { passive:true });
+  root.addEventListener("mousedown", down);
+  root.addEventListener("touchmove", move, { passive:true });
+  root.addEventListener("touchend", () => end(true));
+  root.addEventListener("touchcancel", () => end(false));   // the system took the touch: put everything back, drop nothing
+  root.addEventListener("contextmenu", e => e.preventDefault());
+  root.addEventListener("click", e => { if (justDragged){ e.stopPropagation(); e.preventDefault(); } }, true);
+}
+
+function splitOut(b, i){
+  if (b.chapters.length < 2) return toast("A book needs at least one chapter");
+  const c = b.chapters.splice(i, 1)[0];
+  DB.books.push({ id: uid(), title: c.title, chapters: [c], created: Date.now(), updated: Date.now() });
+  save(); draw(); toast(`“${c.title}” is now its own book`);
+}
+function shelfDrop(id, t){
+  const bs = DB.books, i = bs.findIndex(b => b.id === id); if (i < 0) return;
+  const D = bs[i];
+  if (t.t === "on"){
+    const T = bs.find(b => b.id === t.id); if (!T) return;
+    T.chapters.push(...D.chapters); T.updated = Date.now(); bs.splice(i, 1);
+    toast(`Merged into “${T.title}”`);
+  } else {
+    bs.splice(i, 1);
+    let j = bs.findIndex(b => b.id === t.id); if (t.t === "after") j++;
+    bs.splice(j, 0, D);
+  }
+  const y = $("#body").scrollTop; save(); draw(); $("#body").scrollTop = y;
+}
+
 const SPINES = [["#7a3b3b","#f0d9a8"],["#2f5d62","#f0d9a8"],["#3d4a7a","#e9b44c"],["#6b5a3a","#f3e6c4"],["#4f3d63","#e9b44c"],["#375a43","#f0d9a8"],["#8a5a2b","#f7f2e7"]];
-const LOGO = `<svg viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LampRead"><defs><linearGradient id="lc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd98a" stop-opacity=".6"/><stop offset=".5" stop-color="#e9b44c" stop-opacity=".2"/><stop offset="1" stop-color="#e9b44c" stop-opacity="0"/></linearGradient><radialGradient id="lg"><stop offset="0" stop-color="#ffe3a3" stop-opacity=".9"/><stop offset="1" stop-color="#ffe3a3" stop-opacity="0"/></radialGradient></defs><path d="M87 66L113 66L186 230L14 230Z" fill="url(#lc)"/><circle cx="100" cy="66" r="22" fill="url(#lg)"/><path d="M100 0V32" stroke="#e9b44c" stroke-width="2.5" stroke-linecap="round"/><path d="M72 64Q72 32 100 32Q128 32 128 64Z" fill="#e9b44c"/><ellipse cx="100" cy="65" rx="10" ry="4" fill="#fff1c9"/></svg>`;
+const LAMP = `<svg viewBox="60 0 80 72" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LampRead"><defs><radialGradient id="lg2"><stop offset="0" stop-color="#ffe3a3" stop-opacity=".9"/><stop offset="1" stop-color="#ffe3a3" stop-opacity="0"/></radialGradient></defs><circle cx="100" cy="66" r="22" fill="url(#lg2)"/><path d="M100 0V32" stroke="#e9b44c" stroke-width="2.5" stroke-linecap="round"/><path d="M72 64Q72 32 100 32Q128 32 128 64Z" fill="#e9b44c"/><ellipse cx="100" cy="65" rx="10" ry="4" fill="#fff1c9"/></svg>`;
 function hashStr(s){ let h = 0; for (const c of s) h = (h*31 + c.charCodeAt(0)) >>> 0; return h; }
 
-const touched = b => Math.max(b.updated||0, ...b.chapters.map(c => c.updated||0));
 function drawLibrary(){
   $("#navBtn").hidden = true; $("#marksBtn").hidden = true; $("#menuBtn").hidden = true;
   $("#dock").hidden = true;
-  const books = [...DB.books].sort((a,b) => touched(b) - touched(a));
   const cover = b => {
     const [bg, fg] = SPINES[hashStr(b.title) % SPINES.length], c = b.chapters.length;
     const n = b.chapters.reduce((a, x) => a + (x.highlights||[]).length, 0);
     return `<button class="sp" data-open="${b.id}" aria-label="${esc(b.title)}" style="--bg2:${bg};--fg2:${fg}">
       <span class="st">${esc(b.title)}</span><span class="mt">${c > 1 ? c + " chapters" : ""}</span>${n ? '<i class="pip"></i>' : ""}</button>`;
   };
-  const slot = `<button class="sp slot" id="importBtn" aria-label="Import book"><i class="plus"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></i><span>Import book</span></button>`;
-  const items = [...books.map(cover), slot];
-  const rows = [];
+  const slot = `<button class="sp slot" data-import aria-label="Import book"><i class="plus"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></i><span>Import book</span></button>`;
+  const items = [...DB.books.map(cover), slot], rows = [];
   for (let i = 0; i < items.length; i += 3) rows.push(items.slice(i, i + 3));
-  while (rows.length < 3) rows.push([]);
+  while (rows.length < 4) rows.push([]);
+  const cp = `<div class="cp">${rows.map(r => `<div class="row">${r.join("")}</div><div class="plank"></div>`).join("")}</div>`;
   $("#body").innerHTML = `
-    <div class="hero">${LOGO}<div class="wm">Lamp<i>Read</i></div><div class="tg">Stories by dad</div></div>
-    <div class="case">${rows.map(r => `<div class="row">${r.join("")}</div><div class="plank"></div>`).join("")}</div>
+    <div class="libhead" id="libhead"><div class="hl">${LAMP}</div><div class="cone"></div><div class="wm">Lamp<i>Read</i></div><div class="tg">Stories by dad</div></div>
+    <div class="case" id="case">${cp}</div>
     <p class="ver">v${VERSION}</p>`;
-  $("#body").querySelectorAll("[data-open]").forEach(el => el.onclick = () => {
-    bookId = el.dataset.open; const pb = pbook(); chapterId = pb.chapters[0].id; view = pb.chapters.length > 1 ? "chapters" : "reader"; draw(); $("#body").scrollTop = 0;
+  const cs = $("#case");
+  cs.querySelectorAll("[data-open]").forEach(el => el.onclick = () => {
+    bookId = el.dataset.open; const pb = pbook(); chapterId = pb.chapters[0].id;
+    view = pb.chapters.length > 1 ? "chapters" : "reader"; draw(); $("#body").scrollTop = 0;
   });
-  $("#importBtn").onclick = () => { importInto = null; $("#fileInput").click(); };
+  cs.querySelectorAll("[data-import]").forEach(el => el.onclick = () => { importInto = null; $("#fileInput").click(); });
+  enableDrag(cs, ".sp[data-open]", { axis:"x", merge:true, hint:"Drop on a book to merge · between books to move", onDrop: shelfDrop });
+
+  // the lamp header follows how far you have scrolled: 0 = full lamp and slogan, 180px+ = small lamp icon
+  const sc = $("#body"), head = $("#libhead");
+  const upd = () => {
+    if (!$("#libhead")) return;
+    const p = Math.max(0, Math.min(1, sc.scrollTop / 180));
+    head.style.setProperty("--p", p); head.style.setProperty("--hh", (240 - 148 * p) + "px"); head.style.setProperty("--lw", (100 - 60 * p) + "px");
+  };
+  sc.onscroll = upd; sc.scrollTop = 0; upd();
 }
 
 function drawChapters(){
@@ -776,14 +920,25 @@ function drawChapters(){
   $("#dock").hidden = true;
   const last = b.chapters.length - 1;
   $("#body").innerHTML = `<div class="pad"><div class="chlist">${b.chapters.map((c, i) => `
-    <div class="chrow"><button class="chmain" data-ch="${c.id}"><span class="chn">${i + 1}</span><span class="cht">${esc(c.title)}</span>${(c.highlights||[]).length ? '<i class="pip2"></i>' : ""}</button>
-    <button class="chmv" data-up="${i}" aria-label="Move up" ${i ? "" : "disabled"}>↑</button><button class="chmv" data-dn="${i}" aria-label="Move down" ${i < last ? "" : "disabled"}>↓</button></div>`).join("")}
-    <button class="chrow chadd" id="addCh">+ Add chapters</button></div></div>`;
+    <div class="chrow" data-cid="${c.id}"><button class="chmain" data-ch="${c.id}"><span class="chn">${i + 1}</span><span class="cht">${esc(c.title)}</span>${(c.highlights||[]).length ? '<i class="pip2"></i>' : ""}</button>
+    <button class="chmv" data-up="${i}" aria-label="Move up" ${i ? "" : "disabled"}>↑</button><button class="chmv" data-dn="${i}" aria-label="Move down" ${i < last ? "" : "disabled"}>↓</button><button class="chmv" data-more="${i}" aria-label="More">⋯</button></div>`).join("")}
+    <button class="chrow chadd" id="addCh">+ Add chapters</button></div></div>${last ? '<div class="outzone" id="outZone" hidden>Drop here to make it its own book</div>' : ""}`;
   $("#body").querySelectorAll("[data-ch]").forEach(el => el.onclick = () => { chapterId = el.dataset.ch; view = "reader"; draw(); $("#body").scrollTop = 0; });
   const mv = (i, d) => { const a = b.chapters; [a[i], a[i + d]] = [a[i + d], a[i]]; save(); draw(); };
   $("#body").querySelectorAll("[data-up]").forEach(el => el.onclick = () => mv(+el.dataset.up, -1));
   $("#body").querySelectorAll("[data-dn]").forEach(el => el.onclick = () => mv(+el.dataset.dn, 1));
   $("#addCh").onclick = () => { importInto = b.id; $("#fileInput").click(); };
+  $("#body").querySelectorAll("[data-more]").forEach(el => el.onclick = () => {
+    const i = +el.dataset.more;
+    openSheet(`<h2>${esc(b.chapters[i].title)}</h2><div class="menu"><button data-a="own"><span>Make it its own book<small>Moves this chapter out to the shelf</small></span></button></div>`);
+    $("#sheet [data-a=own]").onclick = () => { closeSheet(); splitOut(b, i); };
+  });
+  enableDrag($("#body .pad"), ".chrow[data-cid]", { axis:"y", merge:false, out: $("#outZone"), hint:"Drop between to reorder · up top for its own book", onDrop: (id, t) => {
+    const a = b.chapters, i = a.findIndex(c => c.id === id);
+    if (t.t === "out") return splitOut(b, i);
+    const [c] = a.splice(i, 1); let j = a.findIndex(x => x.id === t.id); if (t.t === "after") j++;
+    a.splice(j, 0, c); save(); draw();
+  } });
 }
 
 function drawReader(){
