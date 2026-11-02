@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <!--
   LampRead
+  v0.5.5  Bottom tools: "Comment" switch (tap text, mark it and write a comment straight away) and "Edit text" button.
+          A mark can be edited in place: "Edit text" in the mark sheet opens the editor with the passage selected.
+  v0.5.4  Fix: marked words are highlighted again (a style clash with the lamp made them vanish).
+          Marks list shows type, context and comment; tap a mark to edit the comment, change colour, remove it or jump to it.
+          Landing: shelves slide behind a solid header, the lamp light fades and the lamp switches off when it is small.
   v0.5.3  Smoother drag: press feedback, the picked-up book follows your finger smoothly, forgiving drop targets,
           merge only after a short hover, insertion bar, hint while dragging, drag never drops if the touch is cancelled.
   v0.5.2  Shelf is a normal scroll again (no endless loop): books slide up behind the lamp, scroll back to the start
@@ -26,7 +31,7 @@
   v0.1  Reader with word/sentence/paragraph marks, markdown import/export, backup.
 -->
 <meta name="application-name" content="LampRead">
-<meta name="version" content="0.5.3">
+<meta name="version" content="0.5.5">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -127,7 +132,7 @@ button{background:none;border:0;cursor:pointer}
 /* ---------- reader ---------- */
 .page{
   font-family:var(--serif);font-size:var(--read);line-height:1.72;
-  padding:14px 20px calc(var(--safe-b) + 250px);
+  padding:14px 20px calc(var(--safe-b) + 310px);
   max-width:44rem;margin:0 auto;
 }
 .page h1,.page h2,.page h3{line-height:1.22;margin:1.6em 0 .5em;font-weight:600}
@@ -183,6 +188,7 @@ button{background:none;border:0;cursor:pointer}
   flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
   padding:9px 6px;border-radius:11px;border:1px solid var(--rule);font-size:12.5px;color:var(--dim);
 }
+.pen .pi{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .pen .swatch{width:13px;height:13px;border-radius:4px}
 .pen[aria-pressed="true"]{color:var(--fg);border-color:transparent;background:var(--surface-2);font-weight:600}
 .pen[aria-pressed="true"] .swatch{box-shadow:0 0 0 3px color-mix(in srgb,var(--bg) 60%,transparent)}
@@ -225,7 +231,14 @@ button{background:none;border:0;cursor:pointer}
 .mark:active{background:var(--surface)}
 .mark .bar-l{width:3px;align-self:stretch;border-radius:2px;flex:0 0 auto;min-height:34px}
 .mark .txt{font-family:var(--serif);font-size:16px;line-height:1.5}
-.mark .note{font-size:13px;color:var(--dim);margin-top:5px;line-height:1.45}
+.mark .note{display:block;font-size:13.5px;color:var(--fg);margin-top:7px;line-height:1.45;padding:7px 10px;border-radius:8px;background:var(--surface)}
+.mark .note.none{background:none;padding:0;color:var(--dim);font-style:italic;font-size:12.5px}
+.mark .body2{flex:1;min-width:0;display:block}
+.mark .kind{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:5px}
+.mark .ctx{display:block;font-family:var(--serif);font-size:15px;line-height:1.5;color:var(--dim);display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.mark .ctx b{font-weight:600;color:var(--fg);border-radius:4px;padding:0 2px;background:color-mix(in srgb,var(--mk) 38%,transparent)}
+.mark .chev{align-self:center;color:var(--dim);flex:0 0 auto;font-size:18px}
+.marksub{font-size:12.5px;color:var(--dim);margin:-6px 0 14px}
 .tally{display:flex;gap:14px;margin:0 0 16px;font-size:13px;color:var(--dim);flex-wrap:wrap}
 .tally span{display:flex;align-items:center;gap:6px}
 
@@ -258,14 +271,15 @@ button{background:none;border:0;cursor:pointer}
 .sp .st{font-family:var(--serif);font-size:14.5px;line-height:1.22;font-weight:600;letter-spacing:.01em;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
 .sp .mt{font-size:10px;letter-spacing:.12em;text-transform:uppercase;opacity:.7;min-height:12px}
 .sp .pip{position:absolute;top:10px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber)}
-.libhead{position:fixed;left:0;right:0;top:0;z-index:20;height:calc(var(--hh,240px) + var(--safe-t));pointer-events:none;background:linear-gradient(var(--bg) 0,var(--bg) 52%,transparent)}
-.hl{position:absolute;left:50%;top:calc(var(--safe-t) + 8px);width:var(--lw,100px);transform:translateX(-50%)}
-.hl svg{display:block;width:100%;height:auto;overflow:visible}
+.libhead{position:fixed;left:0;right:0;top:0;z-index:20;height:calc(var(--hh,240px) + var(--safe-t));pointer-events:none;background:linear-gradient(var(--bg) 0,var(--bg) calc(100% - 30px),transparent)}
+.lamphd{position:absolute;left:50%;top:calc(var(--safe-t) + 8px);width:var(--lw,100px);transform:translateX(-50%)}
+.lamphd svg{display:block;width:100%;height:auto;overflow:visible}
+.lamphd .lit{opacity:calc(1 - var(--p,0))}
 .libhead .wm{position:absolute;left:0;right:0;bottom:50px;text-align:center;font-family:var(--serif);font-size:27px;font-weight:600;letter-spacing:.04em;opacity:calc(1 - var(--p,0)*2.4)}
 .libhead .wm i{font-style:normal;color:var(--amber)}
 .libhead .tg{position:absolute;left:0;right:0;bottom:26px;text-align:center;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);opacity:calc(1 - var(--p,0)*4)}
 .cone{position:fixed;left:50%;top:calc(var(--safe-t) + 8px + var(--lw,100px)*.8);width:min(82vw,320px);height:340px;transform:translateX(-50%);pointer-events:none;
-  clip-path:polygon(calc(50% - var(--lw,100px)*.35) 0,calc(50% + var(--lw,100px)*.35) 0,100% 100%,0 100%);background:linear-gradient(rgba(255,217,138,.55),rgba(233,180,76,.2) 45%,transparent)}
+  clip-path:polygon(calc(50% - var(--lw,100px)*.35) 0,calc(50% + var(--lw,100px)*.35) 0,100% 100%,0 100%);background:linear-gradient(rgba(255,217,138,.55),rgba(233,180,76,.2) 45%,transparent);opacity:calc(1 - var(--p,0))}
 .sp,.chrow{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .dragging{opacity:.25}
 .ghost{position:fixed;z-index:200;pointer-events:none;margin:0;flex:none!important;transition:none!important;will-change:transform;box-shadow:0 14px 30px rgba(0,0,0,.45)}
@@ -333,6 +347,10 @@ button{background:none;border:0;cursor:pointer}
       <button class="pen" data-tag="word" aria-pressed="false"><i class="swatch" style="background:var(--teal)"></i>Explain</button>
       <button class="pen" data-tag="loved" aria-pressed="false"><i class="swatch" style="background:var(--rose)"></i>Loved</button>
     </div>
+    <div class="pens" role="group" aria-label="Comment and edit">
+      <button class="pen" id="askBtn" aria-pressed="false"><svg viewBox="0 0 24 24" class="pi"><path d="M4 5h16v11H9l-5 4z"/></svg>Comment</button>
+      <button class="pen" id="editBtn"><svg viewBox="0 0 24 24" class="pi"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg>Edit text</button>
+    </div>
     <div class="readrow" role="group" aria-label="Reading">
       <div class="stepper">
         <button id="szDown" aria-label="Smaller text" style="font-size:14px">A−</button>
@@ -358,7 +376,7 @@ button{background:none;border:0;cursor:pointer}
    own phone/host. Same API either way.
    ============================================================ */
 const KEY = "lamp.v1";
-const VERSION = "0.5.3";
+const VERSION = "0.5.5";
 const Store = {
   async get(k){
     if (typeof window.storage !== "undefined" && window.storage) {
@@ -580,41 +598,64 @@ function addMark(bi, wi, sent){
   const bk = book();
   const [s, e] = rangeFor(bi, wi, sent);
   bk.highlights = (bk.highlights||[]).filter(h => !(h.b === bi && h.s <= e && h.e >= s));
+  const nid = uid();
   bk.highlights.push({
-    id: uid(), b: bi, s, e, tag: DB.settings.tag, note: "",
+    id: nid, b: bi, s, e, tag: DB.settings.tag, note: "",
     text: parsed.blocks[bi].words.slice(s, e+1).map(w => w.text).join(" ")
   });
   bk.updated = Date.now();
   save(); draw();
+  if (DB.settings.ask) markSheet(nid);
 }
 
-function markSheet(hid){
+function editAt(h){
+  const bk = book(), bl = parse(bk.source).blocks[h && h.b];
+  view = "editor"; draw();
+  const ed = $("#ed"); if (!ed) return;
+  if (bl && bl.words[h.s] && bl.words[h.e]){
+    const a = bl.words[h.s].s, z = bl.words[h.e].e;
+    setTimeout(() => {
+      ed.focus({ preventScroll:true }); ed.setSelectionRange(a, z);
+      const sc = $("#body"); sc.scrollTop = Math.max(0, ed.scrollHeight * (a / Math.max(1, bk.source.length)) - sc.clientHeight / 3);
+    }, 30);
+  }
+}
+
+function markSheet(hid, fromList){
   const bk = book(); const h = bk.highlights.find(x => x.id === hid); if (!h) return;
+  let tag = h.tag;
   openSheet(`
-    <h2>Mark</h2>
+    <h2>${esc(TAGS[h.tag] ? TAGS[h.tag].label : "Mark")}</h2>
     <div class="quote">${esc(h.text)}</div>
     <div class="pens" style="margin-bottom:12px">
       ${Object.entries(TAGS).map(([k,v]) => `
         <button class="pen" data-settag="${k}" aria-pressed="${h.tag===k}">
           <i class="swatch" style="background:${v.css}"></i>${v.label}</button>`).join("")}
     </div>
-    <textarea class="field" id="noteField" rows="3" placeholder="Why revisit this? (optional)">${esc(h.note||"")}</textarea>
+    <textarea class="field" id="noteField" rows="3" placeholder="Comment (optional): why revisit this?">${esc(h.note||"")}</textarea>
     <div class="sheetrow">
       <button class="btn danger" id="delMark">Remove mark</button>
       <button class="btn primary" id="saveMark">Save</button>
-    </div>`);
+    </div>
+    <div class="sheetrow" style="margin-top:9px"><button class="btn" id="editMark">Edit text</button>${fromList ? '<button class="btn" id="goMark">Show in the text</button>' : ""}</div>`);
+  $("#editMark").onclick = () => { closeSheet(); editAt(h); };
   $("#sheet").querySelectorAll("[data-settag]").forEach(b => b.onclick = () => {
-    h.tag = b.dataset.settag;
+    tag = b.dataset.settag;
     $("#sheet").querySelectorAll("[data-settag]").forEach(x =>
-      x.setAttribute("aria-pressed", x.dataset.settag === h.tag));
+      x.setAttribute("aria-pressed", x.dataset.settag === tag));
   });
   $("#delMark").onclick = () => {
     bk.highlights = bk.highlights.filter(x => x.id !== hid);
     bk.updated = Date.now(); save(); closeSheet(); draw(); toast("Mark removed");
   };
   $("#saveMark").onclick = () => {
-    h.note = $("#noteField").value.trim();
+    h.tag = tag; h.note = $("#noteField").value.trim();
     bk.updated = Date.now(); save(); closeSheet(); draw();
+  };
+  if (fromList) $("#goMark").onclick = () => {
+    closeSheet(); view = "reader"; draw();
+    const t = $("#body").querySelector(`[data-h="${hid}"]`);
+    if (t){ t.scrollIntoView({ block:"center", behavior:"smooth" }); t.classList.add("flash"); }
   };
 }
 
@@ -874,7 +915,7 @@ function shelfDrop(id, t){
 }
 
 const SPINES = [["#7a3b3b","#f0d9a8"],["#2f5d62","#f0d9a8"],["#3d4a7a","#e9b44c"],["#6b5a3a","#f3e6c4"],["#4f3d63","#e9b44c"],["#375a43","#f0d9a8"],["#8a5a2b","#f7f2e7"]];
-const LAMP = `<svg viewBox="60 0 80 72" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LampRead"><defs><radialGradient id="lg2"><stop offset="0" stop-color="#ffe3a3" stop-opacity=".9"/><stop offset="1" stop-color="#ffe3a3" stop-opacity="0"/></radialGradient></defs><circle cx="100" cy="66" r="22" fill="url(#lg2)"/><path d="M100 0V32" stroke="#e9b44c" stroke-width="2.5" stroke-linecap="round"/><path d="M72 64Q72 32 100 32Q128 32 128 64Z" fill="#e9b44c"/><ellipse cx="100" cy="65" rx="10" ry="4" fill="#fff1c9"/></svg>`;
+const LAMP = `<svg viewBox="60 0 80 72" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LampRead"><defs><radialGradient id="lg2"><stop offset="0" stop-color="#ffe3a3" stop-opacity=".9"/><stop offset="1" stop-color="#ffe3a3" stop-opacity="0"/></radialGradient></defs><circle class="lit" cx="100" cy="66" r="22" fill="url(#lg2)"/><path d="M100 0V32" stroke="#6f6853" stroke-width="2.5" stroke-linecap="round"/><path class="lit" d="M100 0V32" stroke="#e9b44c" stroke-width="2.5" stroke-linecap="round"/><path d="M72 64Q72 32 100 32Q128 32 128 64Z" fill="#6f6853"/><path class="lit" d="M72 64Q72 32 100 32Q128 32 128 64Z" fill="#e9b44c"/><ellipse cx="100" cy="65" rx="10" ry="4" fill="#4a4636"/><ellipse class="lit" cx="100" cy="65" rx="10" ry="4" fill="#fff1c9"/></svg>`;
 function hashStr(s){ let h = 0; for (const c of s) h = (h*31 + c.charCodeAt(0)) >>> 0; return h; }
 
 function drawLibrary(){
@@ -892,7 +933,7 @@ function drawLibrary(){
   while (rows.length < 4) rows.push([]);
   const cp = `<div class="cp">${rows.map(r => `<div class="row">${r.join("")}</div><div class="plank"></div>`).join("")}</div>`;
   $("#body").innerHTML = `
-    <div class="libhead" id="libhead"><div class="hl">${LAMP}</div><div class="cone"></div><div class="wm">Lamp<i>Read</i></div><div class="tg">Stories by dad</div></div>
+    <div class="libhead" id="libhead"><div class="lamphd">${LAMP}</div><div class="cone"></div><div class="wm">Lamp<i>Read</i></div><div class="tg">Stories by dad</div></div>
     <div class="case" id="case">${cp}</div>
     <p class="ver">v${VERSION}</p>`;
   const cs = $("#case");
@@ -968,6 +1009,7 @@ function drawMarks(){
   $("#navBtn").hidden = false; $("#marksBtn").hidden = true; $("#menuBtn").hidden = false;
   $("#dock").hidden = true;
 
+  const doc = parse(bk.source);
   const hs = [...(bk.highlights||[])].sort((a,b) => a.b - b.b || a.s - b.s);
   const count = t => hs.filter(h => h.tag === t).length;
   const tally = `<div class="tally">${Object.entries(TAGS).map(([k,v]) =>
@@ -976,24 +1018,28 @@ function drawMarks(){
   $("#body").innerHTML = `<div class="pad">
     <div class="lampmark">${esc(bk.title)}</div>
     ${tally}
-    ${hs.length ? `<div class="marks">${hs.map(h => `
-      <button class="mark" data-go="${h.id}">
-        <i class="bar-l" style="background:${TAGS[h.tag] ? TAGS[h.tag].css : "var(--amber)"}"></i>
-        <span><span class="txt">${esc(h.text)}</span>
-        ${h.note ? `<span class="note">${esc(h.note)}</span>` : ""}</span>
-      </button>`).join("")}</div>`
+    ${hs.length ? `<p class="marksub">Tap a mark to comment, change colour, remove it or jump to it.</p><div class="marks">${hs.map(h => {
+        const col = TAGS[h.tag] ? TAGS[h.tag].css : "var(--amber)";
+        const ws = (doc.blocks[h.b] && doc.blocks[h.b].words) || [], ok = ws[h.s] && ws[h.e];
+        const j = (x, y) => esc(ws.slice(x, y).map(w => w.text).join(" "));
+        const ctx = ok
+          ? `${h.s > 6 ? "… " : ""}${j(Math.max(0, h.s - 6), h.s)} <b>${esc(h.text)}</b> ${j(h.e + 1, h.e + 7)}${h.e + 7 < ws.length ? " …" : ""}`
+          : `<b>${esc(h.text)}</b>`;
+        return `
+      <button class="mark" data-go="${h.id}" style="--mk:${col}">
+        <i class="bar-l" style="background:${col}"></i>
+        <span class="body2"><span class="kind">${TAGS[h.tag] ? TAGS[h.tag].label : esc(h.tag)}</span>
+        <span class="ctx">${ctx}</span>
+        ${h.note ? `<span class="note">${esc(h.note)}</span>` : `<span class="note none">No comment</span>`}</span>
+        <span class="chev">›</span>
+      </button>`; }).join("")}</div>`
       : `<div class="empty"><p>Nothing marked yet.</p><span>Open the book and tap a word, a sentence or a paragraph while you read.</span></div>`}
     <div class="rowbtns">
       <button class="btn" id="exportMarks">
         <svg viewBox="0 0 24 24"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 17v2a1 1 0 001 1h14a1 1 0 001-1v-2"/></svg>Export marks list</button>
     </div></div>`;
 
-  $("#body").querySelectorAll("[data-go]").forEach(el => el.onclick = () => {
-    const id = el.dataset.go;
-    view = "reader"; draw();
-    const t = $("#body").querySelector(`[data-h="${id}"]`);
-    if (t){ t.scrollIntoView({ block:"center", behavior:"smooth" }); t.classList.add("flash"); }
-  });
+  $("#body").querySelectorAll("[data-go]").forEach(el => el.onclick = () => markSheet(el.dataset.go, true));
   $("#exportMarks").onclick = () => deliver(`${slug(bk.title)}-marks.md`, marksDoc(bk));
 }
 
@@ -1055,6 +1101,7 @@ function draw(){
     b.setAttribute("aria-pressed", b.dataset.mode === DB.settings.mode));
   $("#dock").querySelectorAll("[data-tag]").forEach(b =>
     b.setAttribute("aria-pressed", b.dataset.tag === DB.settings.tag));
+  $("#askBtn").setAttribute("aria-pressed", !!DB.settings.ask);
 }
 
 /* ============================================================
@@ -1068,6 +1115,8 @@ $("#navBtn").onclick = () => {
   draw();
 };
 $("#marksBtn").onclick = () => { view = "marks"; draw(); };
+$("#askBtn").onclick = () => { DB.settings.ask = !DB.settings.ask; save(); draw(); };
+$("#editBtn").onclick = () => { view = "editor"; draw(); };
 $("#dockHide").onclick = () => { DB.settings.dock = false; save(); syncDock(); };
 $("#dockShow").onclick = () => { DB.settings.dock = true; save(); syncDock(); };
 const setSize = d => { DB.settings.read = Math.max(14, Math.min(34, DB.settings.read + d)); save(); syncReadControls(); };
